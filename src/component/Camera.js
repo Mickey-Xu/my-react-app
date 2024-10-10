@@ -60,12 +60,12 @@ export default function FullScreenDialog(props) {
         } else {
             // 开启相机
             try {
-                // const stream = await navigator.mediaDevices.getUserMedia({
-                //     video: { facingMode: { exact: 'environment' } }
-                // });
                 const stream = await navigator.mediaDevices.getUserMedia({
-                    video: true
+                    video: { facingMode: { exact: 'environment' } }
                 });
+                // const stream = await navigator.mediaDevices.getUserMedia({
+                //     video: true
+                // });
                 videoRef.current.srcObject = stream;
                 setIsCameraOn(true);
             } catch (error) {
@@ -122,7 +122,7 @@ export default function FullScreenDialog(props) {
                             }} />
                             <canvas ref={canvasRef} style={{ display: 'none' }} />
 
-                            {isCameraOn && props?.showCameraFrame && (
+                            {isCameraOn  && (
                                 <div style={{
                                     position: "absolute",
                                     width: "30%",
@@ -135,7 +135,7 @@ export default function FullScreenDialog(props) {
                                     zIndex: 100
                                 }}></div>
                             )}
-                            {isCameraOn && props?.showCameraFrame && (
+                            {isCameraOn  && (
                                 <div style={{
                                     position: "absolute",
                                     width: "30%",
