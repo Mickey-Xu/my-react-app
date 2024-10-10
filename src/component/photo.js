@@ -100,7 +100,7 @@ export const Photo = (props) => {
                         iptRef.current.value = "";
                     }}
                 >
-                    删除
+                    删除图片
                 </Typography>
            
                     <Camera onChange={(photo) => onPhotoChange(photo, 'camera')}
