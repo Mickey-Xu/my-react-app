@@ -46,14 +46,10 @@ export const Photo = (props) => {
 
     const showWatermark = projectData?.activityNo === "7030" && (props?.identifier === "photoJ" || props?.identifier === "photoP")
     const onPhotoChange = (e) => {
-            if (showWatermark) {
                 fillTextToImg(e, projectData).then((res) => {
                     setImgData(res);
                 })
-            } else {
-                setImgData(e);
-            }
-
+            
     };
 
     return (
