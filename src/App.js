@@ -28,7 +28,8 @@ function App() {
 
   return (
     <div>
-      <Photo />
+      {/* <Photo /> */}
+      <div style={{width:"100px",height:"100px",backgroundColor:"red"}}></div>
       <Button onClick={() => getIDPToken()}>登录</Button>
       <Button>加载</Button>
 
