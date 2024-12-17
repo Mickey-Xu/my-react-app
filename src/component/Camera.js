@@ -158,7 +158,12 @@ export default function FullScreenDialog(props) {
                                     borderRadius: "10%",
                                     pointerEvents: 'none',
                                     zIndex: 1,
-                                }}></div>
+                                 }}>
+                        
+                                    <Typography variant="body2" display="block" align='center' style={{ marginTop: '-20%', color:'#e64a4a'}}>
+                                        框内合同号
+                                    </Typography>
+                                </div>
                             )}
                             {isCameraOn && (
                                 <div style={{
@@ -171,7 +176,25 @@ export default function FullScreenDialog(props) {
                                     borderRadius: "5%",
                                     pointerEvents: 'none',
                                     zIndex: 1,
-                                }}></div>
+                            }}>
+                            <Box style={{position: 'absolute',right: '-40%',width:'100%',height:'100%'}}>
+                                <Typography variant="body2" display="block" align='right' style={{color: '#e64a4a',position:"absolute",right:0, top:'15%' }}>
+                                    挂钩位置
+                                </Typography>
+                                <Typography variant="body2" display="block" align='right' style={{ color: '#e64a4a', position:"absolute",right:0, top: '40%' }}>
+                                    拉力计/测试片
+                                </Typography>
+                                <Typography variant="body2" display="block" align='right' style={{ color: '#e64a4a', position:"absolute",right:0, top: '60%' }}>
+                                    信息牌
+                                </Typography>
+                                <Typography variant="body2" display="block" align='right' style={{ color: '#e64a4a', position:"absolute",right:0, top: '75%' }}>
+                                    拉力计显示
+                                </Typography>
+                                <Typography variant="body2" display="block" align='right' style={{ color: '#e64a4a', position:"absolute",right:0, top: '90%' }}>
+                                    底座
+                                </Typography>
+                                    </Box>
+                           </div>
                             )}
                             <Box style={{
                                 position: "fixed",

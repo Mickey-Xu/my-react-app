@@ -1,38 +1,25 @@
-import logo from './logo.svg';
 import './App.css';
 import { Photo } from './component/photo';
-import { Button } from '@material-ui/core';
-import axios from "axios";
 
 function App() {
 
-   const getIDPToken = () => {
-    const data = {
-      "AppId": "SCF.IQAPP",
-      "UserName": "IQAPP",
-      "Password": "YtLPPMGa9YUkGsJZNYJA8"
-    }
-
-    return axios.post("/user/login", data, {
-      headers: { "Content-Type": "application/json" }
-    })
-      .then(response => {
-        window.localStorage.setItem("idptAuth", JSON.stringify(response.data?.data));
-      })
-      .catch(error => {
-        console.error('Error:', error);
-        return Promise.reject(error);
-      });
-
-  }
-
+  
   return (
     <div>
-      {/* <Photo /> */}
-      <div style={{width:"100px",height:"100px",backgroundColor:"red"}}></div>
-      <Button onClick={() => getIDPToken()}>登录</Button>
-      <Button>加载</Button>
-
+      <Photo />
+      <div style={{
+            position: 'fixed',
+            bottom: '10%',
+            left: '50%',
+            backgroundColor: '#4bff00',
+            color: 'white',
+            fontWeight: 500,
+            padding: '30px',
+            marginLeft: '-24%',
+            fontSize: '30px',
+      }}>
+        version: 3
+      </div>
     </div>
   );
 }
