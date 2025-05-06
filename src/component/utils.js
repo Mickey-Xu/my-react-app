@@ -1,14 +1,59 @@
 
+const getCurrentPosition = () => {
+    return new Promise((resolve) => {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const latitude = position.coords.latitude;
+                    const longitude = position.coords.longitude;
+                    resolve({ status: 'success', data: { latitude, longitude } });
+                },
+                (error) => {
+                    resolve({ status: 'error', message: error.message });
+                }
+            );
+        } else {
+            resolve({ status: 'error', message: 'Geolocation is not supported by this browser.' });
+        }
+    });
 
-export const fillTextToImg = async (base64, projectParams) => {
+};
+
+// 根据经纬度获取详细地址
+const getLocationFromCoordinates = (latitude, longitude) => {
+    return new Promise((resolve, reject) => {
+        if (window.BMap) {
+            const geocoder = new window.BMap.Geocoder(); // 创建 Geocoder 实例
+            const point = new window.BMap.Point(longitude, latitude); // 创建坐标对象
+
+            geocoder.getLocation(point, (result) => {
+                if (result) {
+                    resolve(result.address);
+                } else {
+                    resolve('无法获取地址信息');
+                }
+            });
+        } else {
+            reject('百度地图 API 未加载');
+        }
+    });
+};
+
+export const fillTextToImg = async (base64, projectParams, isOnline) => {
     // let data = store.getState();
     // let location = { longitude: "121.197237", latitude: "31.449172" }
     // const location = await getCurrentPosition();
     // let address = await getLocationFromCoordinates(location?.data?.latitude, location?.data?.longitude);
     // let projectName = data.projects[projectParams.projectNumber]?.description;
     // let time = getTime();
+    
+    var address = ""
+    if (isOnline) {
+        // const location = await getCurrentPosition();
+        address = await getLocationFromCoordinates(121.499768, 31.239774);
+    }
 
-    let watermarkText = [`拍摄地点：江苏省 苏州市 昆山市 花桥镇`, `拍摄时间：2025-08-02 18：12 57`, `订单编号：0000000000`, `项目名称：神塔啊啊啊`];
+    let watermarkText = [`拍摄地点：${address}`, `拍摄时间：2025-08-02 18：12 57`, `订单编号：0000000000`, `项目名称：神塔啊啊啊`];
 
     const img = new Image();
     img.src = base64;

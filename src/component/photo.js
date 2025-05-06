@@ -3,6 +3,8 @@ import { fillTextToImg } from "./utils";
 import React, { useRef, useState } from "react";
 import { useParams } from 'react-router-dom';
 import Camera from "./Camera"
+import useNetworkStatus from "./NetworkStatus";
+import axios from "axios";
 
 const useStyles = makeStyles(({ spacing }) => ({
     btm: {
@@ -43,15 +45,22 @@ export const Photo = (props) => {
     const photoEl = useRef(null);
     const iptRef = useRef(null);
     const projectData = useParams();
+    const isOnline = useNetworkStatus(); // 在函数组件中使用 Hook
 
-    const showWatermark = projectData?.activityNo === "7030" && (props?.identifier === "photoJ" || props?.identifier === "photoP")
     const onPhotoChange = (e) => {
-                fillTextToImg(e, projectData).then((res) => {
+        const src = document.getElementById("map").src;
+        axios.get(src).then((res) => {
+          console.log(res)
+        }).catch((error) => {
+            console.log(error)
+
+      })
+
+        fillTextToImg(e, projectData, false).then((res) => {
                     setImgData(res);
                 })
             
     };
-
     return (
         <div className={classes.root}>
             <Typography variant="subtitle2" className={classes.lable}>

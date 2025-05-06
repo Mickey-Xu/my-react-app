@@ -27,23 +27,25 @@ export default function FullScreenDialog(props) {
     }); 
    
     const handleClickOpen = () => {
+        window.localStorage.setItem("camera", "open");
         setOpen(true);
         toggleCamera();
     };
 
     const handleClose = async () => {
         setOpen(false);
+        window.localStorage.setItem("camera", "close");
+
         setPhoto(null);
         const stream = videoRef.current.srcObject;
         if (stream) {
             stream.getTracks().forEach(track => track.stop());
-            videoRef.current.srcObject = null;
         }
         setIsCameraOn(false);
-    };
+    };  
 
     const toggleCamera = async () => {
-        if (isCameraOn) {
+         if (isCameraOn) {
             // 停止相机
             const stream = videoRef.current.srcObject;
             if (stream) {
@@ -52,29 +54,78 @@ export default function FullScreenDialog(props) {
             }
             setIsCameraOn(false);
         } else {
+             setIsCameraOn(true);
+
             // 开启相机
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({
-                    video: { facingMode: { exact: 'environment' } }
+            // try {
+            //     const stream = await navigator.mediaDevices.getUserMedia({
+            //         video: { facingMode: { exact: 'environment' } }
+            //     });
+            //     // const stream = await navigator.mediaDevices.getUserMedia({
+            //     //     video: \
+            //     // });
+            //     videoRef.current.srcObject = stream;
+            //     setIsCameraOn(true);
+            // } catch (error) {
+            //     console.error("Error accessing the camera:", error);
+            // }
+            if (navigator.mediaDevices === undefined) {
+                navigator.mediaDevices = {};
+            };
+
+            // 一些浏览器部分支持 mediaDevices。我们不能直接给对象设置 getUserMedia
+            // 因为这样可能会覆盖已有的属性。这里我们只会在没有 getUserMedia 属性的时候添加它。
+            if (navigator.mediaDevices.getUserMedia === undefined) {
+                navigator.mediaDevices.getUserMedia = function (constraints) {
+                    // 首先，如果有 getUserMedia 的话，就获得它
+                    var getUserMedia =
+                        navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+
+                    // 一些浏览器根本没实现它 - 那么就返回一个 error 到 promise 的 reject 来保持一个统一的接口
+                    if (!getUserMedia) {
+                        return Promise.reject(
+                            new Error("getUserMedia is not implemented in this browser"),
+                        );
+                    }
+
+                    // 否则，为老的 navigator.getUserMedia 方法包裹一个 Promise
+                    return new Promise(function (resolve, reject) {
+                        getUserMedia.call(navigator, constraints, resolve, reject);
+                    });
+                };
+            };
+            navigator.mediaDevices
+                .getUserMedia({ video: { facingMode: { exact: 'environment' } } })
+                // .getUserMedia({ video: true })
+
+                .then(function (stream) {
+                    var video = document.querySelector("video");
+                    // 旧的浏览器可能没有 srcObject
+                    if ("srcObject" in video) {
+                        video.srcObject = stream;
+                    } else {
+                        // 防止在新的浏览器里使用它，应为它已经不再支持了
+                        video.src = window.URL.createObjectURL(stream);
+                    }
+                    video.onloadedmetadata = function (e) {
+                        video.play();
+                    };
+                })
+                .catch(function (err) {
+                    console.log(err.name + ": " + err.message);
                 });
-                // const stream = await navigator.mediaDevices.getUserMedia({
-                //     video: true
-                // });
-                videoRef.current.srcObject = stream;
-                console.log(videoRef.current)
-                setIsCameraOn(true);
-            } catch (error) {
-                console.error("Error accessing the camera:", error);
-            }
+
         }
     };
 
     const takePhoto = () => {
+        window.localStorage.setItem("camera", "close");
+
         const canvas = canvasRef.current;
         const video = videoRef.current;
 
         if (video && canvas) {
-            const context = canvas.getContext('2d');
+            const context = canvas.getContext('2d');                              
             canvas.width = video.videoWidth;
             canvas.height = video.videoHeight;
             context.drawImage(video, 0, 0, canvas.width, canvas.height);
@@ -82,7 +133,7 @@ export default function FullScreenDialog(props) {
             // 获取图像的 base64 编码
             const base64Image = canvas.toDataURL('image/png');
             setPhoto(base64Image);
-            console.log(base64Image); // 或者根据需要处理
+            // console.log(base64Image); // 或者根据需要处理
             setIsCameraOn(false)
             toggleCamera()
         }
@@ -127,7 +178,7 @@ export default function FullScreenDialog(props) {
                 </AppBar>
                 <List style={{ backgroundColor: "black", padding: 0, margin: 0 }}>
                         <video
-                            onLoadedMetadata={handleLoadedMetadata} 
+                            onLoadedMetadata={handleLoadedMetadata}
                             id='videoRef'
                             ref={videoRef}
                             playsInline
@@ -240,6 +291,7 @@ export default function FullScreenDialog(props) {
                                 <Button
                                     onClick={() => {
                                         props.onChange(photo);
+                                        window.localStorage.setItem("camera", "cose");
                                         setOpen(false);
                                         setPhoto(null);
                                     }}
