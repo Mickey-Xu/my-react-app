@@ -1,2 +1,0 @@
-body{background-color:#f9f9f9;color:#333;font-family:PingFang SC,Helvetica Neue,Helvetica,Arial,sans-serif;margin:0}.container,.scanner-box{height:100%;position:relative;width:100%}.scanner-box{overflow:hidden}.scanner-overlay{animation:scanAnimation 2s infinite;background:#00ff004d;border:1px solid #0f09;height:60px;left:0;position:absolute;top:-50px;width:100%}@keyframes scanAnimation{0%{top:-50px}50%{top:50%;transform:translateY(-50%)}to{top:100%}}
-/*# sourceMappingURL=main.8bd4f869.css.map*/
