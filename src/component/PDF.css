@@ -1,0 +1,35 @@
+
+/* 隐藏缩略图侧栏按钮 */
+.rpv-default-layout__sidebar-tabs {
+  display: none;
+}
+
+.rpv-toolbar__left{
+display: none;
+}
+
+.rpv-core__popver-body-toolbar-more-actions{
+  display: none !important;
+}
+
+/* 隐藏工具栏右侧的 "更多" 按钮（三点菜单） */
+.rpv-toolbar__right {
+  display: none !important;
+}
+
+.rpv-default-layout__toolbar{
+background-color: rgba(0, 0, 0, 0.6);
+}
+
+.rpv-core__minimal-button{
+color: white;
+}
+.rpv-core__icon{
+  width: auto;
+  height: 24px;
+}
+
+.single-page .react-pdf__Page__textContent {
+  display: none;
+  /* 隐藏除第一页外的所有内容 */
+}

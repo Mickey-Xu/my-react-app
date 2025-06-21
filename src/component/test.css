@@ -1,0 +1,76 @@
+/* 全局基础样式 */
+body {
+    margin: 0;
+    font-family: 'PingFang SC', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    background-color: #f9f9f9;
+    color: #333;
+}
+
+.container {
+    padding: 16px;
+}
+
+/* 顶部导航栏 */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.back-btn,
+.appeal-link {
+    color: #007aff;
+    background: none;
+    border: none;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+h1 {
+    font-size: 17px;
+    font-weight: 600;
+    margin: 0;
+}
+
+/* 汇总信息部分 */
+.summary {
+    background: #fff;
+    padding: 16px;
+    margin-top: 12px;
+    border-radius: 8px;
+    font-size: 15px;
+    line-height: 1.6;
+}
+
+.summary span {
+    font-weight: 600;
+}
+
+/* 工资明细列表 */
+.details {
+    margin-top: 16px;
+}
+
+.record {
+    background: #fff;
+    padding: 16px;
+    margin-bottom: 12px;
+    border-radius: 8px;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.record h3 {
+    font-size: 15px;
+    font-weight: 600;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.record p {
+    margin: 4px 0;
+    color: #666;
+
+    
+}

@@ -1,4 +1,4 @@
-import { Box, FormLabel, makeStyles, Typography } from "@material-ui/core";
+import { Box, Button, FormLabel, makeStyles, Typography } from "@material-ui/core";
 import { fillTextToImg } from "./utils";
 import React, { useRef, useState } from "react";
 import { useParams } from 'react-router-dom';
@@ -39,30 +39,48 @@ const useStyles = makeStyles(({ spacing }) => ({
     },
 }));
 
-export const Photo = (props) => {
+ const Photo = (props) => {
     const classes = useStyles();
     const [imgData, setImgData] = useState(null);
     const photoEl = useRef(null);
     const iptRef = useRef(null);
     const projectData = useParams();
-    const isOnline = useNetworkStatus(); // 在函数组件中使用 Hook
+     const isOnline = useNetworkStatus(); // 在函数组件中使用 Hook
+     
+     const [photoType, setPhotoType] = useState(null);
+
 
     const onPhotoChange = (e) => {
-        const src = document.getElementById("map").src;
-        axios.get(src).then((res) => {
-          console.log(res)
-        }).catch((error) => {
-            console.log(error)
+        // const src = document.getElementById("map").src;
+        // axios.get(src).then((res) => {
+        //   console.log(res)
+        // }).catch((error) => {
+        //     console.log(error)
 
-      })
+    //   })
 
         fillTextToImg(e, projectData, false).then((res) => {
                     setImgData(res);
                 })
             
     };
-    return (
-        <div className={classes.root}>
+     return (
+        
+       
+         <div className={classes.root}>
+             
+             <Box>
+                 {[
+                     "photo_DZDY",
+                     "photo_JXDY",
+                     "photo_DZWC",
+                        "photo_JXWC",
+                     "photo_DXZZ",
+                     "photo_SCZZ", "photoJ","photoP"].map((item, index) => <Button onClick={() => setPhotoType(item)} key={index} style={{margin:5}} variant="contained" color={item===photoType? "primary":"default"}>
+                        {item}
+                     </Button>)}
+
+             </Box>
             <Typography variant="subtitle2" className={classes.lable}>
                 {props.label}
             </Typography>
@@ -108,10 +126,12 @@ export const Photo = (props) => {
                     删除图片
                 </Typography>
            
-                    <Camera onChange={(photo) => onPhotoChange(photo, 'camera')}
+                 <Camera onChange={(photo) => onPhotoChange(photo, 'camera')}
+                     identifier={photoType}
                     />
                 
             </Box>
         </div>
     );
 };
+export default Photo;

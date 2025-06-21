@@ -87,3 +87,19 @@ export const fillTextToImg = async (base64, projectParams, isOnline) => {
         };
     });
 }
+
+export const getCameraTipInfo = (photoType) => {
+    const photoJP = ["挂钩位置", "拉力计/测试片", "信息牌", "拉力计显示", "底座"];
+    const data = {
+        "photo_DZDY": ["1.防扭转钢丝绳", "2.合同号", "3.第一根电梯钢丝绳"],
+        "photo_JXDY": ["1.防扭转钢丝绳", "2.称重装置", "3.合同号", "4.第一根电梯钢丝绳"],
+        "photo_DZWC": ["1.合同号", "2.对重侧防扭转钢丝绳安装完成"],
+        "photo_JXWC": ["1.称重装置", "2.合同号", "3.防扭转钢丝绳安装完成"],
+        "photo_DXZZ": ["1.导向绳", "2.电梯主钢丝绳"],
+        "photo_SCZZ": ["1.钢制刹车装置", "2.木制刹车装置", "3.一根钢丝绳"],
+        "photoJ": photoJP,
+        "photoP": photoJP,
+    };
+
+    return data[photoType] || [];
+}
