@@ -1,35 +1,42 @@
-
-/* 隐藏缩略图侧栏按钮 */
-.rpv-default-layout__sidebar-tabs {
-  display: none;
-}
-
-.rpv-toolbar__left{
-display: none;
-}
-
-.rpv-core__popver-body-toolbar-more-actions{
-  display: none !important;
-}
-
-/* 隐藏工具栏右侧的 "更多" 按钮（三点菜单） */
 .rpv-toolbar__right {
   display: none !important;
 }
 
-.rpv-default-layout__toolbar{
-background-color: rgba(0, 0, 0, 0.6);
-}
-
-.rpv-core__minimal-button{
-color: white;
-}
-.rpv-core__icon{
+.rpv-core__icon {
   width: auto;
   height: 24px;
 }
 
-.single-page .react-pdf__Page__textContent {
-  display: none;
-  /* 隐藏除第一页外的所有内容 */
+.pdf-container {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+}
+
+.watermark {
+  position: absolute;
+  left: 55%;
+  transform: translate(-50%, -50%) rotate(-30deg);
+  font-size: 36px;
+  color: rgba(200, 200, 200, 0.4);
+  pointer-events: none;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.rpv-toolbar {
+  width: 90%;
+}
+
+.rpv-toolbar__item .rpv-page-navigation__current-page-input,
+.rpv-toolbar__label {
+  display: none
+}
+
+;
+
+.rpv-toolbar__center,
+.rpv-toolbar__left {
+  display: flex;
+  justify-content: left !important;
 }

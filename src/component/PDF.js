@@ -1,35 +1,54 @@
-import { SpecialZoomLevel, Viewer, Worker, ScrollMode, ViewMode } from '@react-pdf-viewer/core';
-import '@react-pdf-viewer/core/lib/styles/index.css';
+import React, { useEffect, useRef } from 'react';
+import { Viewer, Worker, SpecialZoomLevel } from '@react-pdf-viewer/core';
 import { defaultLayoutPlugin } from '@react-pdf-viewer/default-layout';
+import '@react-pdf-viewer/core/lib/styles/index.css';
 import '@react-pdf-viewer/default-layout/lib/styles/index.css';
-import { toolbarPlugin } from '@react-pdf-viewer/toolbar';
-import { useEffect, useRef } from 'react';
+import { Box, Button } from '@material-ui/core';
+// import { getTime } from 'js/util';
+// import { useHistory } from "react-router-dom";
+import HighlightOffIcon from '@material-ui/icons/HighlightOff';
+import closeIcon from "../img/close.png"
+import {data} from './pdfmoke.js';
+
+// import testPdf from "./test.pdf"
 import "./PDF.css";
-import testPdf from './test.pdf';
+
+const workerSrc = `https://unpkg.com/pdfjs-dist@2/build/pdf.worker.min.js`;
 
 const Watermark = () => {
+  const auth = JSON.parse(localStorage.getItem("auth"));
+  const watermarkText = `${`xumick`} ${'Confidential'}`
+  const watermarkContent = [
+    watermarkText, watermarkText, watermarkText
+  ];
   return (
-    <div
-      style={{
-        position: 'absolute',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        fontSize: '50px',
-        color: 'rgba(0, 0, 0, 0.2)',
-        fontWeight: 'bold',
-        pointerEvents: 'none',
-        userSelect: 'none',
-      }}
-    >
-      CONFIDENTIAL
+    <div>
+      {watermarkContent.map((item, index) => {
+        return <div className='watermark' style={{ top: (index + 1) * 23 + '%' }} key={index}>
+          <div>
+            {item}
+          </div>
+          <div className='watermark-text'>
+          2020-02-03
+          </div>
+        </div>
+      })}
     </div>
+
   );
 };
 
-const PdfViewer = ({ fileUrl }) => {
+const PdfViewer = ({  }) => {
   const containerRef = useRef(null);
-  const defaultLayoutPluginInstance = defaultLayoutPlugin();
+  // const history = useHistory();
+  const defaultLayoutPluginInstance = defaultLayoutPlugin(
+    {
+      sidebarTabs: (defaultTabs) => {
+        return [defaultTabs.find(item => item.title === "Thumbnail")];
+      }
+    }
+  );
+  console.log(data);
   useEffect(() => {
     const container = containerRef.current;
     const handleClick = (e) => {
@@ -54,34 +73,41 @@ const PdfViewer = ({ fileUrl }) => {
         }
       } else {
         // 外部链接，新窗口打开
-        // window.open(href, '_blank');
-        console.log(href)
+        const url = href.split("query=")[1];
+        // history.push(`/itf_retrievalPage/${url}`)
+
       }
     };
     container.addEventListener('click', handleClick);
     return () => container.removeEventListener('click', handleClick);
   }, []);
 
+  document.addEventListener('touchstart', function (e) {
+    if (e.touches.length > 1) {
+      e.preventDefault(); // 禁用多点触控缩放   
+    }
+  }, { passive: false });
+  document.addEventListener('gesturestart', function (e) {
+    e.preventDefault();
+  });
 
-  const handleDocumentLoad = (e) => {
-    console.log(`Number of pages:`, e);
-  };
-  
-  
   return (
-    
-    <div ref={containerRef} style={{ height: '100vh' }}>
-      <Worker workerUrl="https://unpkg.com/pdfjs-dist@2/build/pdf.worker.min.js">
-        <Watermark />
-        <Viewer
-          // initialPage={4}
-          fileUrl={testPdf}
-          plugins={[defaultLayoutPluginInstance]}
-          defaultScale={SpecialZoomLevel.PageFit}
-          onDocumentLoad={handleDocumentLoad}
-        />
-      </Worker>
-    </div>
+    <Box>
+      <Button style={{ position: "fixed", top: 0, zIndex: 10, right: 0, color: "white" }}>
+        <img src={closeIcon} />
+      </Button>
+      <div ref={containerRef} style={{ height: "100vh" }}>
+        <Worker workerUrl={workerSrc}>
+          <Viewer
+            fileUrl={data}
+            plugins={[defaultLayoutPluginInstance]}
+            defaultScale={SpecialZoomLevel.PageFit}
+          />
+          <Watermark />
+        </Worker>
+      </div>
+    </Box>
+
   );
 };
 export default PdfViewer;

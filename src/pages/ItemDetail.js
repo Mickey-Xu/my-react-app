@@ -53,6 +53,7 @@
 
 
 import React from 'react';
+
 import { Link, useParams } from 'react-router-dom';
 const data = {
     Name: "group_ims",
@@ -86,63 +87,14 @@ const ItemListDetail = () => {
     const { itemName } = useParams(); // 获取当前路径中的参数
 
     // 递归查找 item 数据
-    const findItem = (name, items) => {
-        for (let i = 0; i < items.length; i++) {
-            if (items[i].Name === name) {
-                return items[i];
-            }
-            if (items[i].Children) {
-                const found = findItem(name, items[i].Children);
-                if (found) return found;
-            }
-        }
-        return null;
-    };
-    const currentItem = findItem(itemName, [data]);
-
-    // 如果没有匹配的项目，返回到父级数据（显示列表）
-    if (!currentItem) {
-        return (
-            <div>
-                <h2>{data.Name}</h2>
-                {data.Children && data.Children.length > 0 ? (
-                    <ul>
-                        {data.Children.map((child, index) => (
-                            <li key={index}>
-                                {child.Type === 'folder' ? (
-                                    <Link to={`/itfListDetail/${child.Name}`}>{child.Name}</Link>
-                                ) : (
-                                    <span>{child.Name}</span>
-                                )}
-                            </li>
-                        ))}
-                    </ul>
-                ) : (
-                    <p>没有子项</p>
-                )}
-            </div>
-        );
-    }
+  
+    
 
     // 如果找到当前项目，显示详情
     return (
         <div>
-            <h2>{currentItem.Name}</h2>
-            {currentItem.Children && currentItem.Children.length > 0 ? (
-                <ul>
-                    {currentItem.Children.map((child, index) => (
-                        <li key={index}>
-                            {child.Type === 'folder' ? (
-                                <Link to={`/itfListDetail/${child.Name}`}>{child.Name}</Link>
-                            ) : (
-                                <span>{child.Name}</span>
-                            )}
-                        </li>
-                    ))}
-                </ul>
-            ) : (
-                <p>没有更多子项</p>
-            )}
+            <Link to={`/itfList`}>itfList</Link>
+
         </div>
     );
 };
