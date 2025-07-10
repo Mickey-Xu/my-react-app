@@ -48,7 +48,6 @@ const PdfViewer = ({  }) => {
       }
     }
   );
-  console.log(data);
   useEffect(() => {
     const container = containerRef.current;
     const handleClick = (e) => {

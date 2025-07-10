@@ -18,7 +18,7 @@ function App() {
      <Model open={open} handleClose={() => setOpen(false)}>
        <QRCodeScanner open={open} />
      </Model> */}
-
+<Typography variant="h1" align="center" gutterBottom>version1</Typography>
      <PDF />
 </div>
  );
