@@ -1,112 +1,126 @@
-import React, { useEffect, useRef } from 'react';
-import { Viewer, Worker, SpecialZoomLevel } from '@react-pdf-viewer/core';
+
+    import React, { useState, useRef, useEffect } from 'react';
+import { Viewer, Worker, ScrollMode, SpecialZoomLevel } from '@react-pdf-viewer/core';
 import { defaultLayoutPlugin } from '@react-pdf-viewer/default-layout';
 import '@react-pdf-viewer/core/lib/styles/index.css';
 import '@react-pdf-viewer/default-layout/lib/styles/index.css';
-import { Box, Button } from '@material-ui/core';
-// import { getTime } from 'js/util';
-// import { useHistory } from "react-router-dom";
-import HighlightOffIcon from '@material-ui/icons/HighlightOff';
-import closeIcon from "../img/close.png"
-import {data} from './pdfmoke.js';
-
-// import testPdf from "./test.pdf"
-import "./PDF.css";
+import testPdf from "./test.pdf";
+import { useSwipeable } from 'react-swipeable';
 
 const workerSrc = `https://unpkg.com/pdfjs-dist@2/build/pdf.worker.min.js`;
 
-const Watermark = () => {
-  const auth = JSON.parse(localStorage.getItem("auth"));
-  const watermarkText = `${`xumick`} ${'Confidential'}`
-  const watermarkContent = [
-    watermarkText, watermarkText, watermarkText
-  ];
-  return (
-    <div>
-      {watermarkContent.map((item, index) => {
-        return <div className='watermark' style={{ top: (index + 1) * 23 + '%' }} key={index}>
-          <div>
-            {item}
-          </div>
-          <div className='watermark-text'>
-          2020-02-03
-          </div>
-        </div>
-      })}
-    </div>
+const PdfViewerWithPagination = () => {
+  const [currentPage, setCurrentPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [isZoomed, setIsZoomed] = useState(false);
+  const [canSwipe, setCanSwipe] = useState(true);
+  const viewerContainerRef = useRef(null);
+  const pagesContainerRef = useRef(null);
+  const viewerRef = useRef({
+    jumpToPage: () => Promise.resolve(),
+    getPagesContainer: () => null,
+    zoom: null
+  });
 
-  );
-};
-
-const PdfViewer = ({  }) => {
-  const containerRef = useRef(null);
-  // const history = useHistory();
-  const defaultLayoutPluginInstance = defaultLayoutPlugin(
-    {
-      sidebarTabs: (defaultTabs) => {
-        return [defaultTabs.find(item => item.title === "Thumbnail")];
-      }
+  // 分页控制插件
+  const paginationPlugin = {
+    install: (pluginFunctions) => {
+      viewerRef.current = {
+        jumpToPage: pluginFunctions.jumpToPage,
+        getPagesContainer: pluginFunctions.getPagesContainer,
+        zoom: pluginFunctions.zoom
+      };
     }
-  );
-  useEffect(() => {
-    const container = containerRef.current;
-    const handleClick = (e) => {
-      const aTag = e.target.closest('a');
-      if (!aTag || !container.contains(aTag)) return;
-      e.preventDefault();
-      const href = aTag.getAttribute('href');
-      const label = aTag.textContent?.trim() || '[无文本]';
-      // 📝 打印日志
-      console.log(`点击链接: 文本 "${label}" → 目标 ${href}`);
-      if (href.startsWith('#page=')) {
-        const pageNum = parseInt(href.split('=')[1], 10);
-        if (!isNaN(pageNum)) {
-          // 🧭 触发 PDF 内部跳转（导航页码）
-          const viewerElem = container.querySelector('[data-testid="viewer"]');
-          if (viewerElem) {
-            const goToPageEvent = new CustomEvent('page-jump', {
-              detail: { pageIndex: pageNum - 1 },
-            });
-            viewerElem.dispatchEvent(goToPageEvent);
-          }
-        }
-      } else {
-        // 外部链接，新窗口打开
-        const url = href.split("query=")[1];
-        // history.push(`/itf_retrievalPage/${url}`)
+  };
 
+  // 默认布局插件
+  const defaultLayoutPluginInstance = defaultLayoutPlugin({
+    toolbarPlugin: {
+      onZoom: (zoom) => {
+        setIsZoomed(typeof zoom === 'number' ? zoom > 1 : false);
+      }
+    },
+    // sidebarTabs: (defaultTabs) => [defaultTabs[0]] // 只保留缩略图
+  });
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (!pagesContainerRef.current) return;
+      const { scrollTop, scrollHeight, clientHeight } = pagesContainerRef.current;
+      setCanSwipe((scrollTop + clientHeight >= scrollHeight - 10) || !isZoomed);
+    };
+
+    const updatePagesContainer = () => {
+      if (viewerRef.current.getPagesContainer) {
+        const container = viewerRef.current.getPagesContainer();
+        if (container) {
+          pagesContainerRef.current = container;
+          container.addEventListener('scroll', handleScroll);
+        }
       }
     };
-    container.addEventListener('click', handleClick);
-    return () => container.removeEventListener('click', handleClick);
-  }, []);
 
-  document.addEventListener('touchstart', function (e) {
-    if (e.touches.length > 1) {
-      e.preventDefault(); // 禁用多点触控缩放   
+    updatePagesContainer();
+    const intervalId = setInterval(updatePagesContainer, 500);
+
+    return () => {
+      clearInterval(intervalId);
+      pagesContainerRef.current?.removeEventListener('scroll', handleScroll);
+    };
+  }, [isZoomed]);
+
+  const handleDocumentLoad = (e) => {
+    setTotalPages(e.doc.numPages);
+  };
+
+  const jumpToPage = (pageIndex) => {
+    if (pageIndex >= 0 && pageIndex < totalPages) {
+      // 重置缩放并跳转页面
+      viewerRef.current.zoom?.(SpecialZoomLevel.PageFit);
+      setIsZoomed(false);
+      viewerRef.current.jumpToPage(pageIndex)
+        .then(() => setCurrentPage(pageIndex))
+        .catch(console.error);
     }
-  }, { passive: false });
-  document.addEventListener('gesturestart', function (e) {
-    e.preventDefault();
+  };
+
+  const goToPreviousPage = () => jumpToPage(currentPage - 1);
+  const goToNextPage = () => jumpToPage(currentPage + 1);
+
+  // 手势配置
+  const handlers = useSwipeable({
+    onSwipedUp: ({ velocity }) => {
+      if (velocity > 2 && canSwipe) goToNextPage();
+    },
+    onSwipedDown: ({ velocity }) => {
+      if (velocity > 2 && canSwipe) goToPreviousPage();
+    },
+    trackMouse: true,
+    delta: 200,
+    preventDefaultTouchmoveEvent: true
   });
 
   return (
-    <Box>
-      <Button style={{ position: "fixed", top: 0, zIndex: 10, right: 0, color: "white" }}>
-        <img src={closeIcon} />
-      </Button>
-      <div ref={containerRef} style={{ height: "100vh" }}>
-        <Worker workerUrl={workerSrc}>
+    <div {...handlers} style={{
+      height: '100vh',
+      display: 'flex',
+      flexDirection: 'column',
+      backgroundColor: '#f5f5f5',
+      touchAction: isZoomed ? 'pan-y' : 'none'
+    }}>
+      <Worker workerUrl={workerSrc}>
+        <div ref={viewerContainerRef} style={{ flex: 1, overflow: 'hidden' }}>
           <Viewer
-            fileUrl={data}
-            plugins={[defaultLayoutPluginInstance]}
-            defaultScale={SpecialZoomLevel.PageFit}
+            fileUrl={testPdf}
+            plugins={[paginationPlugin, defaultLayoutPluginInstance]}
+            scrollMode={ScrollMode.Page}
+            onDocumentLoad={handleDocumentLoad}
+            onPageChange={(e) => setCurrentPage(e.currentPage)}
           />
-          <Watermark />
-        </Worker>
-      </div>
-    </Box>
-
+        </div>
+      </Worker>
+    </div>
   );
 };
-export default PdfViewer;
+
+export default PdfViewerWithPagination;

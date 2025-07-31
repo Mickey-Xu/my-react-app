@@ -11,14 +11,14 @@ function App() {
   const [open, setOpen] = useState(false);
 
  return (
-   <div style={{ padding: 0 }}>
+   <div style={{ padding: 0,height:"100%",overflow: "hidden" }}>
      {/* <Button style={{ padding: 0 }} onClick={() => setOpen(true)}>
        <span>扫码_version2</span>
      </Button>
      <Model open={open} handleClose={() => setOpen(false)}>
        <QRCodeScanner open={open} />
      </Model> */}
-<Typography variant="h1" align="center" gutterBottom>version1</Typography>
+{/* <Typography variant="h1" align="center" gutterBottom>version1</Typography> */}
      <PDF />
 </div>
  );
